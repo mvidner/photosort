@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+
+require "fileutils"
+require "date"
+#require "mini_exiftool"
+require "exifr"
+require "optparse"
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: photosort [options] files..."
+
+  opts.on("-v", "--verbose", "Run verbosely") do |v|
+    options[:verbose] = v
+  end
+  opts.on("-d", "--dry-run", "Run verbosely without changes") do |v|
+    options[:dryrun] = v
+  end
+end.parse!
+
+if options[:dryrun]
+  include FileUtils::DryRun
+elsif options[:verbose]
+  include FileUtils::Verbose
+else
+  include FileUtils
+end
+
+# return Date when photo was taken
+# approximated by file modification time
+def file_date(filename)
+#  exif = MiniExiftool.new(filename)
+#  time = exif[:date_time_original]
+  time = EXIFR::JPEG.new(filename).date_time rescue nil
+  time ||= File.stat(filename).mtime
+  Date.new(time.year, time.month, time.day)
+end
+
+DEST_ROOT = "/data1/foto"
+DEST_STRFTIME = "%Y/%Y-%m-%d"
+
+def destination(date)
+  DEST_ROOT + "/" + date.strftime(DEST_STRFTIME)
+end
+
+print "_" * ARGV.size
+print "\r"
+date_to_name = Hash.new { |hash, key| hash[key] = Array.new }
+ARGV.each do |filename|
+  date = file_date(filename)
+  print "."
+  date_to_name[date] << filename
+end
+puts
+
+date_to_name.keys.sort.each do |date|
+  dest = destination(date)
+  puts dest
+  filenames = date_to_name[date]
+  filenames.each { |f| puts " #{f}" }
+  if filenames.size <= 3
+    puts " Not moving, too few."
+  else
+    mkdir_p dest
+    mv filenames, dest
+  end
+  puts
+end
