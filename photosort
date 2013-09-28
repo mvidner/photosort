@@ -1,4 +1,10 @@
 #!/usr/bin/env ruby
+# Copyright (C) 2013 Martin Vidner
+# MIT License
+#
+# photosort: move photos to individual directories according to date taken
+# usage:
+#     photosort /media/SMENA/DCIM/100SMENA/*
 
 require "fileutils"
 require "date"
