@@ -2,7 +2,6 @@
 
 require "fileutils"
 require "date"
-#require "mini_exiftool"
 require "exifr"
 require "optparse"
 
@@ -29,8 +28,6 @@ end
 # return Date when photo was taken
 # approximated by file modification time
 def file_date(filename)
-#  exif = MiniExiftool.new(filename)
-#  time = exif[:date_time_original]
   time = EXIFR::JPEG.new(filename).date_time rescue nil
   time ||= File.stat(filename).mtime
   Date.new(time.year, time.month, time.day)
