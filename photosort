@@ -21,6 +21,14 @@ OptionParser.new do |opts|
   opts.on("-d", "--dry-run", "Run verbosely without changes") do |v|
     options[:dryrun] = v
   end
+
+  opts.on("-t", "--target=DIR", "Target directory base") do |v|
+    options[:target] = v
+  end
+  opts.on("-f", "--format=STRFTIME",
+          "Format for target directory date-specific part") do |v|
+    options[:format] = v
+  end
 end.parse!
 
 if options[:dryrun]
@@ -39,8 +47,8 @@ def file_date(filename)
   Date.new(time.year, time.month, time.day)
 end
 
-DEST_ROOT = "/data1/foto"
-DEST_STRFTIME = "%Y/%Y-%m-%d"
+DEST_ROOT = options[:target] || "/data1/foto"
+DEST_STRFTIME = options[:format] || "%Y/%Y-%m-%d"
 
 def destination(date)
   DEST_ROOT + "/" + date.strftime(DEST_STRFTIME)
