@@ -8,7 +8,7 @@
 
 require "fileutils"
 require "date"
-require "exifr"
+require "exifr/jpeg"
 require "optparse"
 
 options = {}
@@ -42,7 +42,7 @@ end
 # return Date when photo was taken
 # approximated by file modification time
 def file_date(filename)
-  time = EXIFR::JPEG.new(filename).date_time rescue nil
+  time = EXIFR::JPEG.new(filename).date_time
   time ||= File.stat(filename).mtime
   Date.new(time.year, time.month, time.day)
 end
