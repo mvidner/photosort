@@ -42,7 +42,14 @@ end
 # return Date when photo was taken
 # approximated by file modification time
 def file_date(filename)
-  time = EXIFR::JPEG.new(filename).date_time
+  begin
+    time = EXIFR::JPEG.new(filename).date_time
+  rescue EXIFR::MalformedJPEG
+    time = nil
+  rescue => e
+    e.message.replace("For #{filename}: #{e.message}")
+    raise e
+  end
   time ||= File.stat(filename).mtime
   Date.new(time.year, time.month, time.day)
 end
