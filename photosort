@@ -21,6 +21,9 @@ OptionParser.new do |opts|
   opts.on("-d", "--dry-run", "Run verbosely without changes") do |v|
     options[:dryrun] = v
   end
+  opts.on("-c", "--copy", "Copy instead of moving") do |v|
+    options[:copy] = v
+  end
 
   opts.on("-t", "--target=DIR", "Target directory base") do |v|
     options[:target] = v
@@ -77,6 +80,10 @@ date_to_name.keys.sort.each do |date|
   filenames = date_to_name[date]
   filenames.each { |f| puts " #{f}" }
   mkdir_p dest
-  mv filenames, dest
+  if options[:copy]
+    cp filenames, dest
+  else
+    mv filenames, dest
+  end
   puts
 end
