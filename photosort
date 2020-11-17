@@ -76,11 +76,7 @@ date_to_name.keys.sort.each do |date|
   puts dest
   filenames = date_to_name[date]
   filenames.each { |f| puts " #{f}" }
-  if filenames.size <= 0
-    puts " Not moving, too few."
-  else
-    mkdir_p dest
-    mv filenames, dest
-  end
+  mkdir_p dest
+  mv filenames, dest
   puts
 end
